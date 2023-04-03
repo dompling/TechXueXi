@@ -9,6 +9,7 @@ from pdlearn.const import const
 import threading
 
 
+url_prefix = "https://pc-proxy-api.xuexi.cn/delegate"
 # 总积分
 # https://pc-api.xuexi.cn/open/api/score/get?_t=1608769882241
 # 今日积分
@@ -63,7 +64,7 @@ def get_score(cookies):
     jar = RequestsCookieJar()
     for cookie in cookies:
         jar.set(cookie['name'], cookie['value'])
-    total_json = requests.get("https://pc-api.xuexi.cn/delegate/score/get", cookies=jar,
+    total_json = requests.get(f"{url_prefix}/score/get", cookies=jar,
                               headers={'Cache-Control': 'no-cache'}).content.decode("utf8")
     if not json.loads(total_json)["data"]:
         globalvar.pushprint("cookie过期，请重新登录", chat_id)
@@ -73,17 +74,17 @@ def get_score(cookies):
 
     total = int(json.loads(total_json)["data"]["score"])
     #userId = json.loads(total_json)["data"]["userId"]
-    user_info = requests.get("https://pc-api.xuexi.cn/delegate/user/info", cookies=jar,
+    user_info = requests.get(f"{url_prefix}/user/info", cookies=jar,
                              headers={'Cache-Control': 'no-cache'}).content.decode("utf8")
     userId = json.loads(user_info)["data"]["uid"]
     userName = json.loads(user_info)["data"]["nick"]
     # score_json = requests.get("https://pc-api.xuexi.cn/open/api/score/today/queryrate", cookies=jar,
     #                          headers={'Cache-Control': 'no-cache'}).content.decode("utf8")
-    # today_json = requests.get("https://pc-api.xuexi.cn/open/api/score/today/query", cookies=jar,
-    #                          headers={'Cache-Control': 'no-cache'}).content.decode("utf8")
-    today = 0
-    # today = int(json.loads(today_json)["data"]["score"])
-    score_json = requests.get("https://pc-proxy-api.xuexi.cn/delegate/score/days/listScoreProgress?sence=score&deviceType=2", cookies=jar,
+    today_json = requests.get(f"{url_prefix}/score/today/query", cookies=jar,
+                             headers={'Cache-Control': 'no-cache'}).content.decode("utf8")
+    # today = 0
+    today = int(json.loads(today_json)["data"]["score"])
+    score_json = requests.get(f"{url_prefix}/score/days/listScoreProgress?sence=score&deviceType=2", cookies=jar,
                               headers={'Cache-Control': 'no-cache'}).content.decode("utf8")
     dayScoreDtos = json.loads(score_json)["data"]
     today = dayScoreDtos["totalScore"]
